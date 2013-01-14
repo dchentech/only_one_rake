@@ -15,7 +15,7 @@ module Rake
     Process.exit! 0 if oors.select {|oor| oor.equal? namespace, task }.size > 1
   end
 
-  # From yhc
+  # From github.com/hongchen
   # Add to rake.gem/lib/rake/dsl_definition.rb
   module DSL
     private
