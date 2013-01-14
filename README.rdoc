@@ -1,6 +1,15 @@
-= only_one_rake
+== only_one_rake
 
 Ensure only one rake is running at a time
+
+== Usage
+
+namespace :rails do
+  desc "online user count"
+  only_one_task :online_user_count => :environment do
+    loop { OnlineUser.count; sleep 1 }
+  end
+end
 
 == Contributing to only_one_rake
  
