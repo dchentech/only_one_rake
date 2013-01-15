@@ -2,10 +2,10 @@ module Rake
   WHOAMI = `whoami`.strip
 
   class OOR < Struct.new(:uid, :pid, :ppid, :c, :stime, :tty, :time, :cmd)
-    def nt_str; self.cmd.split.select {|i| i.match(/:/) }[0].split(':') end
-    def namespace; self.nt_str[0] end
-    def task; self.nt_str[1] end
-    def equal?(n, t); self.nt_str == "#{n}:#{t}" end
+    def nt_str; self.cmd.split.select {|i| i.match(/:/) }[0] end
+    def namespace; self.nt_str.split(':')[0] end
+    def task; self.nt_str.split(':')[1] end
+    def equal?(n, t); self.nt_str == [n, t].join(":") end
   end
 
   # TODO support not only one namespace
