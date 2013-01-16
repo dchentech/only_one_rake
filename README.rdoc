@@ -4,12 +4,12 @@ Ensure only one rake is running at a time
 
 == Usage
 
-namespace :rails do
-  desc "online user count"
-  only_one_task :online_user_count => :environment do
-    loop { OnlineUser.count; sleep 1 }
+  namespace :rails do
+    desc "online user count"
+    only_one_task :online_user_count => :environment do
+      loop { OnlineUser.count; sleep 1 }
+    end
   end
-end
 
 == Contributing to only_one_rake
  
@@ -23,4 +23,4 @@ end
 
 == Copyright
 
-Copyright (c) 2013 David Chen at eoe.cn. See LICENSE.txt for further details.
+Copyright (c) 2013 David Chen, Hongchen Yang at eoe.cn. See LICENSE.txt for further details.
