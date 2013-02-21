@@ -23,4 +23,4 @@ Ensure only one rake is running at a time
 
 == Copyright
 
-Copyright (c) 2013 David Chen, Hongchen Yang at eoe.cn. See LICENSE.txt for further details.
+Copyright (c) 2013 David Chen at eoe.cn. See LICENSE.txt for further details.
