@@ -11,7 +11,6 @@ module Rake
     end
   end
 
-  # TODO support not only one namespace
   def self.ensure_only_one_task_is_running name
     oors = `ps -u #{WHOAMI} -ef | grep rake | grep -v '/bash ' | grep -v 'grep rake'`.split("\n").map {|line| ProcessStatusLine.new *line.split(" ", 8) }
     Process.exit! 0 if oors.select {|oor| oor.namespace_equal?(name) && oor.working_dir_equal?(`pwd`) }.size > 1
