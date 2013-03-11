@@ -28,7 +28,6 @@ module Rake
 
   class Task
     attr_accessor :is_only_one_task
-    attr_accessor :rake_working_dir
 
     # Execute the actions associated with this task.
     def execute(args=nil)
