@@ -3,7 +3,7 @@ module Rake
 
   class ProcessStatusLine < Struct.new(:uid, :pid, :ppid, :c, :stime, :tty, :time, :cmd)
     def namespace_equal? namespace
-      self.cmd.split.select {|i| i.match(/:/) }[0] == name
+      self.cmd.split.select {|i| i.match(/:/) }[0] == namespace
     end
 
     def working_dir_equal? working_dir
