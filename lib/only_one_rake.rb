@@ -2,16 +2,19 @@ module Rake
   WHOAMI = `whoami`.strip
 
   class ProcessStatusLine < Struct.new(:uid, :pid, :ppid, :c, :stime, :tty, :time, :cmd)
-    def nt_str; self.cmd.split.select {|i| i.match(/:/) }[0] end
-    def namespace; self.nt_str.split(':')[1..-2].join(":") end
-    def task; self.nt_str.split(':')[-1] end
-    def equal? name; self.nt_str == name end
+    def namespace_equal? namespace
+      self.cmd.split.select {|i| i.match(/:/) }[0] == name
+    end
+
+    def working_dir_equal? working_dir
+      `lsof -p #{self.pid} | grep cwd | grep DIR`.split[-1] == working_dir.strip
+    end
   end
 
   # TODO support not only one namespace
   def self.ensure_only_one_task_is_running name
     oors = `ps -u #{WHOAMI} -ef | grep rake | grep -v '/bash ' | grep -v 'grep rake'`.split("\n").map {|line| ProcessStatusLine.new *line.split(" ", 8) }
-    Process.exit! 0 if oors.select {|oor| oor.equal? name }.size > 1
+    Process.exit! 0 if oors.select {|oor| oor.namespace_equal?(name) && oor.working_dir_equal?(`pwd`) }.size > 1
   end
 
   module DSL
@@ -25,6 +28,7 @@ module Rake
 
   class Task
     attr_accessor :is_only_one_task
+    attr_accessor :rake_working_dir
 
     # Execute the actions associated with this task.
     def execute(args=nil)
@@ -38,7 +42,7 @@ module Rake
       end
       application.enhance_with_matching_rule(name) if @actions.empty?
 
-      # patch
+      # here's the patch!
       Rake.ensure_only_one_task_is_running name if is_only_one_task
 
       @actions.each do |act|
