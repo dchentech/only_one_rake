@@ -7,13 +7,13 @@ module Rake
     end
 
     def working_dir_equal? working_dir
-      `lsof -p #{self.pid} | grep cwd | grep DIR`.split[-1] == working_dir.strip
+      !!(`lsof -p #{self.pid} | grep cwd | grep DIR`.split[-1].match(working_dir))
     end
   end
 
-  def self.ensure_only_one_task_is_running name
-    oors = `ps -u #{WHOAMI} -ef | grep rake | grep -v '/bash ' | grep -v 'grep rake'`.split("\n").map {|line| ProcessStatusLine.new *line.split(" ", 8) }
-    Process.exit! 0 if oors.select {|oor| oor.namespace_equal?(name) && oor.working_dir_equal?(`pwd`) }.size > 1
+  def self.ensure_only_one_task_is_running name, working_dir
+    process_status_lines = `ps -u #{WHOAMI} -ef | grep rake | grep -v '/bash ' | grep -v 'grep rake'`.split("\n").map {|line| ProcessStatusLine.new *line.split(" ", 8) }
+    Process.exit! 0 if process_status_lines.select {|process_status_line| process_status_line.namespace_equal?(name) && process_status_line.working_dir_equal?(working_dir) }.size > 1
   end
 
   module DSL
@@ -27,6 +27,7 @@ module Rake
 
   class Task
     attr_accessor :is_only_one_task
+    attr_accessor :working_dir
 
     # Execute the actions associated with this task.
     def execute(args=nil)
@@ -41,7 +42,8 @@ module Rake
       application.enhance_with_matching_rule(name) if @actions.empty?
 
       # here's the patch!
-      Rake.ensure_only_one_task_is_running name if is_only_one_task
+      self.working_dir = `pwd`.strip # it'll maybe change in the task, so set it first
+      Rake.ensure_only_one_task_is_running name, self.working_dir if self.is_only_one_task
 
       @actions.each do |act|
         case act.arity
