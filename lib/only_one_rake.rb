@@ -7,7 +7,7 @@ module Rake
     end
 
     def working_dir_equal? working_dir
-      !!(`lsof -p #{self.pid} | grep cwd | grep DIR`.split[-1].match(working_dir))
+      !!(`lsof -p #{self.pid} | grep cwd | grep DIR`.split[-1].to_s.match(working_dir))
     end
   end
 
